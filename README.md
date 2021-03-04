@@ -1,8 +1,7 @@
 # db-adapter
 Debezium-based database source adapter for Diffusion.
 
-It is provided as an example only and should not be considered suitable for a production system. Push Technology do not provide any support for this project.
-
+Push Technology do not provide any support for this project. It is provided as an example only.
 ## Introduction
 
 This Diffusion adapter can be used to replicate database tables as Diffusion topics. It uses change data capture (CDC) via the Debezium library to monitor changes to the tables, and reflect those changes into the topic model. Tables are mapped to JSON topics in one of three ways.
