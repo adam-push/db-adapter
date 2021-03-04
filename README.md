@@ -1,5 +1,7 @@
 # db-adapter
-Debezium-based database source adapter for Diffusion
+Debezium-based database source adapter for Diffusion.
+
+It is provided as an example only and should not be considered suitable for a production system. Push Technology do not provide any support for this project.
 
 ## Introduction
 
