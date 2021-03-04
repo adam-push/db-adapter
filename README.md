@@ -66,14 +66,14 @@ database.include=grocery
 
 If not specified, defaults for the following values are the same as listed above:
 
-    - connector.class
-    - name
-    - offset.storage
-    - offset.flush.interval
-    - database.server.name
-    - database.server.id
-    - database.history
-    - database.history.file.filename
+- connector.class
+- name
+- offset.storage
+- offset.flush.interval
+- database.server.name
+- database.server.id
+- database.history
+- database.history.file.filename
 
 ### Diffusion connection parameters
 
