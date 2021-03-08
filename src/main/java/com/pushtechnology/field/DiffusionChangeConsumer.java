@@ -12,6 +12,7 @@ import java.util.Properties;
 public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<ChangeEvent<String, String>> {
 
     private enum TableType {
+        NONE,
         ROW,
         ARRAY,
         OBJECT
@@ -52,19 +53,16 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
                     String db = sourceNode.get("db").textValue();
                     String table = sourceNode.get("table").textValue();
 
-                    JsonNode before = payloadNode.get("before");
-                    JsonNode after = payloadNode.get("after");
-
                     String operation = opNode.textValue().toLowerCase();
                     switch(operation) {
                         case "c":
-                            addOrUpdateRow(db, table, after);
+                            addOrUpdateRow(db, table, jsonNode);
                             break;
                         case "u":
-                            addOrUpdateRow(db, table, after);
+                            addOrUpdateRow(db, table, jsonNode);
                             break;
                         case "d":
-                            deleteRow(db, table, before);
+                            deleteRow(db, table, jsonNode);
                             break;
                         default:
                             System.out.println("Unknown operation '" + operation + "'");
@@ -92,18 +90,21 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
     }
 
     private TableType getTableType(String table) {
-        switch(properties.getProperty("table." + table + ".type", "row").toLowerCase()) {
+        switch(properties.getProperty("table." + table + ".type", "none").toLowerCase()) {
             case "array":
                 return TableType.ARRAY;
             case "object":
                 return TableType.OBJECT;
+            case "row":
+                return TableType.ROW;
         }
-        return TableType.ROW;
+        return TableType.NONE;
     }
 
-    private void addOrUpdateRow(String db, String table, JsonNode after) {
-        String rowName = getRowName(db, table, after);
+    private void addOrUpdateRow(String db, String table, JsonNode node) {
+        JsonNode payloadNode = node.get("payload");
 
+        String rowName = getRowName(db, table, payloadNode.get("after"));
         if(rowName != null) {
             TableType tableType = getTableType(table);
 
@@ -111,7 +112,6 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
             switch(tableType) {
                 case ARRAY:
                     topicName = db + "/" + table;
-
                     if (!tableIndexCache.hasTable(table)) {
                         diffusionWrapper.addArrayTopic(topicName);
                     }
@@ -119,10 +119,10 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
                     int index = tableIndexCache.getIndex(table, rowName);
                     if (index == -1) {
                         tableIndexCache.addIndex(table, rowName);
-                        diffusionWrapper.patchTopicAddArray(topicName, after.toString());
+                        diffusionWrapper.patchTopicAddArray(topicName, payloadNode.get("after").toString());
                     }
                     else {
-                        diffusionWrapper.patchTopicReplaceArray(topicName, after.toString(), index);
+                        diffusionWrapper.patchTopicReplaceArray(topicName, payloadNode.get("after").toString(), index);
                     }
                     break;
                 case OBJECT:
@@ -133,22 +133,28 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
 
                     if(tableIndexCache.getIndex(table, rowName) == -1) {
                         tableIndexCache.addIndex(table, rowName);
-                        diffusionWrapper.patchTopicAddObject(topicName, rowName, after.toString());
+                        diffusionWrapper.patchTopicAddObject(topicName, rowName, payloadNode.get("after").toString());
                     }
                     else {
-                        diffusionWrapper.patchTopicReplaceObject(topicName, rowName, after.toString());
+                        diffusionWrapper.patchTopicReplaceObject(topicName, rowName, payloadNode.get("after").toString());
                     }
+                    break;
+                case ROW:
+                    topicName = db + "/" + table + "/" + rowName;
+                    diffusionWrapper.updateTopicRow(topicName, payloadNode.get("after").toString());
                     break;
                 default:
                     topicName = db + "/" + table + "/" + rowName;
-                    diffusionWrapper.updateTopic(topicName, after.toString());
+                    diffusionWrapper.updateTopicRow(topicName, node.toString()); // Top-level node
                     break;
             }
         }
     }
 
-    private void deleteRow(String db, String table, JsonNode before) {
-        String rowName = getRowName(db, table, before);
+    private void deleteRow(String db, String table, JsonNode node) {
+        JsonNode payloadNode = node.get("payload");
+
+        String rowName = getRowName(db, table, payloadNode.get("before"));
         if (rowName != null) {
             TableType tableType = getTableType(table);
 
@@ -169,9 +175,14 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
                     }
                     diffusionWrapper.patchTopicRemoveObject(topicName, rowName);
                     break;
+                case ROW:
+                    topicName = db + "/" + table + "/" + rowName;
+                    diffusionWrapper.deleteTopicRow(topicName);
+                    break;
                 default:
                     topicName = db + "/" + table + "/" + rowName;
-                    diffusionWrapper.deleteTopic(topicName);
+                    diffusionWrapper.deleteTopicRow(topicName);
+                    break;
             }
         }
     }

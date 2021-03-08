@@ -4,13 +4,15 @@ Debezium-based database source adapter for Diffusion.
 Push Technology do not provide any support for this project. It is provided as an example only.
 ## Introduction
 
-This Diffusion adapter can be used to replicate database tables as Diffusion topics. It uses change data capture (CDC) via the Debezium library to monitor changes to the tables, and reflect those changes into the topic model. Tables are mapped to JSON topics in one of three ways.
+This Diffusion adapter can be used to replicate database tables as Diffusion topics. It uses change data capture (CDC) via the Debezium library to monitor changes to the tables, and reflect those changes into the topic model. Tables are mapped to JSON topics in one of four ways.
 
 - **Object** : A table is mapped to a JSON topic, with each record being a JSON object keyed by the table's primary key.
 
 - **Array** : A table is mapped to a JSON topic, with all records as entries in an array.
  
 - **Row** : All records are mapped as individual JSON child topics below a topic path representing the table.
+
+- **None** : As per **Row**, but the topic contents are exactly as received from Debezium with no processing other than conversion to JSON. This will include schema information, as well as the tble row data before and after the change.
 
 Note: Replication is one-way only; updates to the topic model are not propagated back to the database.
 

@@ -75,6 +75,14 @@ public class DiffusionWrapper {
         session.feature(TopicControl.class).removeTopics(">" + topic);
     }
 
+    public void updateTopicRow(String topic, String value) {
+        updateTopic(topic, value);
+    }
+
+    public void deleteTopicRow(String topic) {
+        deleteTopic(topic);
+    }
+
     public void addArrayTopic(String topic) {
         JSON emptyJson = Diffusion.dataTypes().json().fromJsonString("[]");
         session.feature(TopicUpdate.class).addAndSet(topic, jsonSpec, JSON.class, emptyJson);
