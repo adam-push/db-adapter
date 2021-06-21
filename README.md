@@ -53,6 +53,7 @@ offset.storage.file.filename=/tmp/offsets.dat
 offset.flush.interval.ms=60000
 tasks.max=1
 schemas.enable=false
+decimal.handling.mode=string
 
 database.server.name=diffusion
 database.server.id=8192
@@ -72,6 +73,9 @@ If not specified, defaults for the following values are the same as listed above
 - name
 - offset.storage
 - offset.flush.interval
+- tasks.max
+- schemas.enable
+- decimal.handling.mode
 - database.server.name
 - database.server.id
 - database.history

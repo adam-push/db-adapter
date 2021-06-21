@@ -48,6 +48,8 @@ public class Main {
         properties.put("database.history", MemoryDatabaseHistory.class.getName());
         properties.put("database.history.file.filename", "dbhistory.dat");
 
+        properties.put("decimal.handling.mode", "string");
+
         for(String key : userProperties.stringPropertyNames()) {
             properties.put(key, userProperties.getProperty(key));
         }
