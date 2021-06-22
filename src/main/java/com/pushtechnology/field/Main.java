@@ -1,25 +1,16 @@
 package com.pushtechnology.field;
 
-import io.debezium.config.Configuration;
-import io.debezium.connector.mysql.MySqlConnectorConfig;
-import io.debezium.embedded.EmbeddedEngine;
-import io.debezium.engine.ChangeEvent;
-import io.debezium.engine.DebeziumEngine;
-import io.debezium.engine.format.Json;
-import io.debezium.relational.history.MemoryDatabaseHistory;
-import io.debezium.util.Clock;
-import org.apache.kafka.connect.data.Schema;
-import org.apache.kafka.connect.data.SchemaBuilder;
-import org.apache.kafka.connect.data.Struct;
-import org.apache.kafka.connect.json.JsonConverter;
-import org.apache.kafka.connect.source.SourceRecord;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import io.debezium.engine.ChangeEvent;
+import io.debezium.engine.DebeziumEngine;
+import io.debezium.engine.format.Json;
+import io.debezium.relational.history.MemoryDatabaseHistory;
 
 public class Main {
     private static final String SERVER_NAME = "diffusion";
