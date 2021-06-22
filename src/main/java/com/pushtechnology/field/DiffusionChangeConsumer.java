@@ -55,6 +55,9 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
 
                     String operation = opNode.textValue().toLowerCase();
                     switch(operation) {
+                        case "r":
+                            addOrUpdateRow(db, table, jsonNode);
+                            break;
                         case "c":
                             addOrUpdateRow(db, table, jsonNode);
                             break;
