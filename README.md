@@ -98,14 +98,14 @@ Each table to be replicated must be specified in the configuration file by givin
 
 The following property tells the adapter to replicate the table "`items`" which has the primary key "`id`"
 ```
-table.items.key=id
+diffusion.table.items.key=id
 ```
 
 The format of the JSON topic that is produced is controlled by the "`type`" parameter for the table, e.g.
 ```
-table.items.type=array
-table.items.type=object
-table.items.type=row
+diffusion.table.items.type=array
+diffusion.table.items.type=object
+diffusion.table.items.type=row
 ```
 
 Consider the following table "`stock`" in the database "`grocery`":

@@ -80,7 +80,7 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
     }
 
     private String getRowName(String db, String table, JsonNode node) {
-        String propertyKey = "table." + table + ".key";
+        String propertyKey = "diffusion.table." + table + ".key";
         String keyRowName = properties.getProperty(propertyKey);
 
         if(keyRowName == null) {
@@ -93,7 +93,7 @@ public class DiffusionChangeConsumer implements DebeziumEngine.ChangeConsumer<Ch
     }
 
     private TableType getTableType(String table) {
-        switch(properties.getProperty("table." + table + ".type", "none").toLowerCase()) {
+        switch(properties.getProperty("diffusion.table." + table + ".type", "none").toLowerCase()) {
             case "array":
                 return TableType.ARRAY;
             case "object":
